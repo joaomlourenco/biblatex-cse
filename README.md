@@ -15,7 +15,7 @@ Please notice that this is a _hacked_ approach (starting from `authoryear` style
 * If you find out somo non-conformance with CSE, let me know by opening and issue here in GitHub (or, even better, submit a pull request).
 * If you know how to convert this into a proper BibLaTeX style, let me know… and we can work on it together.
 
-<!-- --------
+--------
 
 <picture>
   <source
@@ -39,4 +39,4 @@ Please notice that this is a _hacked_ approach (starting from `authoryear` style
 
 **If you opt for using this project, please give it a star by clicking the (⭐️) at the top right of the [project's page](https://github.com/joaomlourenco/biblatex-cse).**
 
--------- -->
+--------
