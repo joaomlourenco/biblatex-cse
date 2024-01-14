@@ -1,0 +1,103 @@
+\usepackage[
+  backend=biber,
+  style=authoryear,
+  maxcitenames=2,
+  minbibnames=10,
+  maxbibnames=10,
+  dashed=false,
+  uniquelist=false,
+  giveninits=true,
+  urldate=iso,
+  date=year,
+  seconds=true,
+]{biblatex}
+
+\usepackage{xpatch}
+
+% Remove commas between family and given names
+  \DeclareNameAlias{sortname}{family-given}
+  \renewrobustcmd*{\revsdnamepunct}{}
+  \renewrobustcmd*{\bibinitdelim}{}
+
+% Remove commas between family and given names
+  \renewrobustcmd*{\revsdnamepunct}{}
+  \renewrobustcmd*{\bibinitdelim}{}
+
+% Remove dot after initials
+  \renewrobustcmd*{\bibinitperiod}{}
+  
+% Remove quotation marks from title
+ \DeclareFieldFormat*{title}{#1}
+
+% Remove emphasized from titles
+\DeclareFieldFormat*{journaltitle}{#1\isdot}
+\DeclareFieldFormat{postnote}{#1}
+\DeclareFieldFormat{multipostnote}{#1}
+\renewcommand*{\bibpagespunct}{\addcolon}
+\renewcommand{\postnotedelim}{%
+  \iffieldpages{postnote}
+    {\addcolon\space}
+    {\addspace}}
+
+% Remove "and" before last author
+\DefineBibliographyExtras{english}{%
+  \DeclareFieldFormat{pages}{#1}
+  \DeclareDelimFormat{finalnamedelim}{%
+    \ifnumgreater{\value{liststop}}{2}{%
+      \printdelim{multinamedelim}}{\addspace\bibstring{and}\space}}}
+
+% Add dot after list of authors (and before year) and remove parentheses in date
+\xpatchbibmacro{date+extradate}{%
+  \printtext[parens]%
+}{%
+  \setunit*{\addperiod\space}%
+  \printtext%
+}{}{}
+
+% Remove "in:" prefix in journal title
+  \renewbibmacro{in:}{}
+
+% Cite as "family initials"
+\DeclareNameFormat{labelname}{%
+  \ifcase\value{uniquename}%
+    \usebibmacro{name:family}
+      {\namepartfamily}
+      {\namepartgiven}
+      {\namepartprefix}
+      {\namepartsuffix}%
+  \or
+    \ifuseprefix
+      {\usebibmacro{name:family-given}
+        {\namepartfamily}
+        {\namepartgiveni}
+        {\namepartprefix}
+        {\namepartsuffixi}}
+      {\usebibmacro{name:family-given}
+        {\namepartfamily}
+        {\namepartgiveni}
+        {\namepartprefixi}
+        {\namepartsuffixi}}%
+  \or
+    \usebibmacro{name:family-given}
+      {\namepartfamily}
+      {\namepartgiven}
+      {\namepartprefix}
+      {\namepartsuffix}%
+  \fi
+  \usebibmacro{name:andothers}}
+
+% Always remove "and" before last author
+\ifdefined\prebibhook%
+  \DeclareDelimFormat{finalnamedelim}{%
+    \printdelim{multinamedelim}%
+  }%
+\else\ifdefined\bibliography%
+  \let\origbibliography=\bibliography%
+  \renewcommand{\bibliography}{%
+    \DeclareDelimFormat{finalnamedelim}{%
+      \printdelim{multinamedelim}%
+    }%
+    \origbibliography%
+  }%
+\fi\fi
+
