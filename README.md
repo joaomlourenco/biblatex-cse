@@ -2,6 +2,7 @@
 
 Support for **Council of Science Editors** style in BibLaTeX.
 
+
 ## How to use the biblatex-cse style
 
 1. Download the `biblatex-cse.bbx` and `biblatex-cse.cbx` files and put them in your document's main diretory/folder.
@@ -12,7 +13,8 @@ Support for **Council of Science Editors** style in BibLaTeX.
 
 ## How to contribute
 
-I did this style file by request of a user of my [https://github.com/joaomlourenco/novathesis](LaTeX template \novathesis).  He was quite thorough double and triple checking that the output was conforming to the requirements of his University (Faculty of Veterinaria from the University of Lisbon).  Although this \texttt{\filename} style served the requirerments from his University, there may still be some uncomformities to the CSE style.  If you find any, please open an issue [https://github.com/joaomlourenco/biblatex-cse](in the project's page at GitHub) or, even better, \textbf{submit a pull request}.
+I did this style file by request of a user of my [https://github.com/joaomlourenco/novathesis](LaTeX template `novathesis`). He was quite thorough, double and triple checking that the output was conforming to the requirements of his University (Faculty of Veterinary from the University of Lisbon). Although this biblatex-cse style served the requirements from his University, there may still be some unconformities to the CSE style. If you find any, please open an issue in the [https://github.com/joaomlourenco/biblatex-cse](in the project's page on GitHub) or, even better, **submit a pull request**.
+
 
 --------
 
