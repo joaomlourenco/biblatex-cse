@@ -1,6 +1,37 @@
-\usepackage[
-  backend=biber,
-  style=authoryear,
+%% This is file `biblatex-cse.bbx',
+%%
+%% Copyright (C) 2024 by João Lourenço <joao.lourenco@fct.unl.pt>
+%%
+%% This file may be distributed and/or modified under the conditions of
+%% the LaTeX Project Public License, either version 1.3c of this license
+%% or (at your option) any later version. The latest version of this
+%% license is in:
+%%
+%%    http://www.latex-project.org/lppl.txt
+%%
+%% and version 1.3c or later is part of all distributions of LaTeX
+%% version 2006/05/20 or later.
+%%
+\def\fileversion{1.1.0}
+\def\filedate   {2025/01/01}
+\edef\filename  {biblatex-cse}
+
+\ProvidesFile{\filename.cbx}[%
+  \filedate\  v\fileversion (João M. Lourenço) Council of Science Editors bibliography style]
+
+\RequireBibliographyStyle{authoryear}
+
+% From: https://tex.stackexchange.com/questions/12254/biblatex-how-to-remove-the-parentheses-around-the-year-in-authoryear-style
+% By courtesy of Enrico Gregorio (egreg)
+\def\act@on@bibmacro#1#2{%
+  \expandafter#1\csname abx@macro@\detokenize{#2}\endcsname
+}
+\def\patchbibmacro{\act@on@bibmacro\patchcmd}
+\def\pretobibmacro{\act@on@bibmacro\pretocmd}
+\def\apptobibmacro{\act@on@bibmacro\apptocmd}
+\def\showbibmacro{\act@on@bibmacro\show}
+
+\ExecuteBibliographyOptions{
   maxcitenames=2,
   minbibnames=10,
   maxbibnames=10,
@@ -10,24 +41,24 @@
   urldate=iso,
   date=year,
   seconds=true,
-]{biblatex}
+}
 
-\usepackage{xpatch}
-
-% Remove commas between family and given names
-  \DeclareNameAlias{sortname}{family-given}
-  \renewrobustcmd*{\revsdnamepunct}{}
-  \renewrobustcmd*{\bibinitdelim}{}
+% \usepackage{xpatch}
 
 % Remove commas between family and given names
-  \renewrobustcmd*{\revsdnamepunct}{}
-  \renewrobustcmd*{\bibinitdelim}{}
+\DeclareNameAlias{sortname}{family-given}
+\renewrobustcmd*{\revsdnamepunct}{}
+\renewrobustcmd*{\bibinitdelim}{}
+
+% Remove commas between family and given names
+\renewrobustcmd*{\revsdnamepunct}{}
+\renewrobustcmd*{\bibinitdelim}{}
 
 % Remove dot after initials
-  \renewrobustcmd*{\bibinitperiod}{}
+\renewrobustcmd*{\bibinitperiod}{}
   
 % Remove quotation marks from title
- \DeclareFieldFormat*{title}{#1}
+\DeclareFieldFormat*{title}{#1}
 
 % Remove emphasized from titles
 \DeclareFieldFormat*{journaltitle}{#1\isdot}
@@ -47,7 +78,8 @@
       \printdelim{multinamedelim}}{\addspace\bibstring{and}\space}}}
 
 % Add dot after list of authors (and before year) and remove parentheses in date
-\xpatchbibmacro{date+extradate}{%
+% \xpatchbibmacro{date+extradate}{%
+\patchbibmacro{date+extradate}{%
   \printtext[parens]%
 }{%
   \setunit*{\addperiod\space}%
@@ -55,7 +87,7 @@
 }{}{}
 
 % Remove "in:" prefix in journal title
-  \renewbibmacro{in:}{}
+\renewbibmacro{in:}{}
 
 % Cite as "family initials"
 \DeclareNameFormat{labelname}{%

@@ -1,122 +1,121 @@
-% !TEX TS-program = pdflatex
-%
-% Created by João Lourenço on 2024-01-13.
-% Copyright (c) 2024 .
+%% This is file `biblatex-cse-doc.tex',
+%%
+%% Copyright (C) 2024 by João Lourenço <joao.lourenco@fct.unl.pt>
+%%
+%% This file may be distributed and/or modified under the conditions of
+%% the LaTeX Project Public License, either version 1.3c of this license
+%% or (at your option) any later version. The latest version of this
+%% license is in:
+%%
+%%    http://www.latex-project.org/lppl.txt
+%%
+%% and version 1.3c or later is part of all distributions of LaTeX
+%% version 2006/05/20 or later.
+%%
 \documentclass[
   a4paper, % paper size.
   11pt, % type size.
-  oneside,  % all pages setup with the same margins.
-  % twoside,    % margins change from recto to verso pages.
-  % onecolumn,  % only one column of text on a page.
-  % openright,  % each chapter will start on a recto page.
-  % openleft, % each chapter will start on a verso page.
-  % openany,  % chapters may start on either recto or verso pages.
-]{scrartcl}
+]{article}
 
 % Enable hyperlinking/hypertext and PDF metadata
-\usepackage{biblatex-cse}
+\usepackage[style=biblatex-cse]{biblatex}
 \addbibresource{bibliography.bib}
 
 
-\title{Test of CSE}
-\author{João Lourenço}
+\usepackage[colorlinks=true,allcolors=blue]{hyperref}
+
+
+\newcommand{\novathesis}{\texttt{novathesis}}
+\newcommand{\nauthors}[1]{#1 authors: }
+
+\title{The Council of Science Editors (\textsf{\filename}) Bib\LaTeX\ style}
+\author{João M. Lourenço $<$\texttt{joao.lourenco@fct.unl.pt}$>$}
+\date{\filedate\ (v\fileversion)}
 
 \begin{document}
   
-\section{Article}
+  \maketitle
+
+\begin{abstract}
+    This package provides support for the bibliogrraphy style \emph{Council of Science Editors} in BibLaTeX.
+\end{abstract}
+
+\section{How to use the biblatex-cse style}
+
+\begin{enumerate}
+  \item Download the \texttt{biblatex-cse.bbx} and \texttt{biblatex-cse.cbx} files and put them in your document's main diretory/folder.
+  \item Load \texttt{biblatex} with the option \texttt{style=biblatex-cse}, i.e.,
+\begin{verbatim}
+\usepackage[style=biblatex-cse]{biblatex}  
+\end{verbatim}
+\end{enumerate}
+
+\section{How to contribute}
+
+I did this style file by request of a user of my \href{https://github.com/joaomlourenco/novathesis}{LaTeX template \novathesis}.  He was quite thorough double and triple checking that the output was conforming to the requirements of his University (Faculty of Veterinaria from the University of Lisbon).  Although this \texttt{\filename} style served the requirerments from his University, there may still be some uncomformities to the CSE style.  If you find any, please open an issue \href{https://github.com/joaomlourenco/biblatex-cse}{in the project's page at GitHub} or, even better, \textbf{submit a pull request}.
+
+
+\section{Examples of citations abd bibliography}
+  
+\subsection{Article Citations}
 \indent
-\par\cite{Asa2011}
-\par\cite{Carvalho2007}
-\par\cite{Duddington1955}
-\par\cite{Eleftheriou2021}
-\par\cite{Graham1941}
-\par\cite{Kaplan2012}
-\par\cite{Larsen2000}
-\par\cite{Lysek1963}
-\par\cite{Lysek1982}
-\par\cite{Malan1997}
-\par\cite{Mansfield2004}
-\par\cite{Marchese2021}
-\par\cite{Maurelli2014}
-\par\cite{Mbaya2011}
-\par\cite{Migaki1982}
-\par\cite{Montali2001}
-\par\cite{Moudgil2018}
-\par\cite{Murphy2014}
-\par\cite{Nalubamba2012}
-\par\cite{Olivera2021}
-\par\cite{PanayotovaPencheva2013}
-\par\cite{Rabb2004}
-\par\cite{Remfr1978}
-\par\cite{Riadigos2014}
-\par\cite{Ribes2000}
-\par\cite{Rideout1987}
-\par\cite{Rivero2021}
-\par\cite{Saidin2018}
-\par\cite{Silcox2017}
-\par\cite{Strait2012}
-\par\cite{Waller2001a}
-\par\cite{Waller2004}
-\par\cite{Williams2014}
+\par\nauthors{1}\cite{Duddington1955}
+\par\nauthors{2}\cite{Asa2011}
+\par\nauthors{3}\cite{Migaki1982}
+\par\nauthors{4}\cite{Lysek1982}
+\par\nauthors{5}\cite{Carvalho2007}
+\par\nauthors{8}\cite{Riadigos2014}
 
 \printbibliography[type=article, title=Article References]
 
-
-
-\section{Book}
+\subsection{Book Citations}
 \indent
-\par\cite{AnkelSimons2007}
-\par\cite{Bogitsh2013}
-\par\cite{Bowman2014}
-\par\cite{Fazendeiro1989}
-\par\cite{Miller2014}
-\par\cite{Modry2015}
-\par\cite{Modry2017}
-\par\cite{Paniker2018}
-\par\cite{Taylor2016}
-\par\cite{Zoos2022}
+\par\nauthors{1}\cite{AnkelSimons2007}
+\par\nauthors{2}\cite{Bogitsh2013}
+\par\nauthors{3}\cite{Taylor2016}
+\par\nauthors{4}\cite{Modry2015}
+\par\nauthors{5}\cite{Modry2017}
 
 \printbibliography[type=book, title=Book References]
 
 
-\section{Master Thesis}
+\subsection{Manual Citations}
 \indent
-\par\cite{Carvalho2002}
-\par\cite{Evangelista2018}
-\par\cite{Lozano2019}
-\par\cite{Reis2019}
+\par\nauthors{1}\cite{Zoos2022}
+
+\printbibliography[type=manual, title=Manual References]
+
+
+\subsection{Master Thesis Citations}
+\indent
+\par\nauthors{1}\cite{Carvalho2002}
 
 \printbibliography[type=masterthesis, title=Masterthesis References]
 
 
-\section{PhD Thesis}
+\subsection{Online Citations}
 \indent
-\par\cite{Balan2017}
-\par\cite{Monteiro2015}
+\par\nauthors{1}\cite{ZooBarcelona:Timeline}
+
+\printbibliography[type=manual, title=Online References]
+
+
+\subsection{PhD Thesis Citations}
+\indent
+\par\nauthors{1}\cite{Balan2017}
 
 \printbibliography[type=phdthesis, title=Phdthesis References]
 
 
-\section{Technical Report}
+\subsection{Technical Report Citations}
 \indent
-\par\cite{Abello2017}
-\par\cite{Duque2018}
-\par\cite{Fiby2020}
-\par\cite{Miller2011}
-\par\cite{Palomero2015}
-\par\cite{Ruivo2022}
-\par\cite{Trovao2019}
+\par\nauthors{1}\cite{Fiby2020}
+\par\nauthors{2}\cite{Miller2011}
+\par\nauthors{5}\cite{Abello2017}
+\par\nauthors{5}\cite{Duque2018}
 
 \printbibliography[type=techreport, title=Techreport References]
 
-
-
-\section{Online}
-\indent
-\par\cite{ZooBarcelona:AnimalsandPlants}
-\par\cite{ZooBarcelona:Timeline}
-
-\printbibliography[type=online, title=Online References]
 
 
 % Bibliography goes here

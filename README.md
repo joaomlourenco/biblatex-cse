@@ -2,18 +2,17 @@
 
 Support for **Council of Science Editors** style in BibLaTeX.
 
-Please notice that this is a _hacked_ approach (starting from `authoryear` style) and not a proper BibLaTeX style.  Still, I believe it works quite well.
+## How to use the biblatex-cse style
 
-## How to use
-
-1. Download the `biblatex-cse.sty` file.
-1. *Do not* load the `biblatex` package yourself.  Instead use `\usepackage{biblatex-cse}`, and the package will load `biblatex`.
-1. If you want to enforce some options for `biblatex`, use `\PassOptionsToPackage{YOUR_OPTIONS}{biblatex}` **before** the `\usepackage{biblatex-cse}`.
+1. Download the `biblatex-cse.bbx` and `biblatex-cse.cbx` files and put them in your document's main diretory/folder.
+1. Load `biblatex` with the option `style=biblatex-cse`, i.e.,
+```latex
+\usepackage[style=biblatex-cse]{biblatex}
+```
 
 ## How to contribute
 
-* If you find out somo non-conformance with CSE, let me know by opening and issue here in GitHub (or, even better, submit a pull request).
-* If you know how to convert this into a proper BibLaTeX style, let me know… and we can work on it together.
+I did this style file by request of a user of my [https://github.com/joaomlourenco/novathesis](LaTeX template \novathesis).  He was quite thorough double and triple checking that the output was conforming to the requirements of his University (Faculty of Veterinaria from the University of Lisbon).  Although this \texttt{\filename} style served the requirerments from his University, there may still be some uncomformities to the CSE style.  If you find any, please open an issue [https://github.com/joaomlourenco/biblatex-cse](in the project's page at GitHub) or, even better, \textbf{submit a pull request}.
 
 --------
 
