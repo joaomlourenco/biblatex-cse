@@ -2,6 +2,13 @@
 
 Support for **Council of Science Editors** style in BibLaTeX.
 
+## About
+
+* **Package:** biblcatex-cse — Council of Science Editors style for BibLaTeX
+* **Copyright:** 2024/25 © João M. Lourenço <joao.lourenco@fct.unl.pt>
+* **CTAN:** https://ctan.org/pkg/biblatex-cse
+* **Repository:** https://github.com/joaomlourenco/biblatex-cse
+* **License:** The LaTeX Project Public License 1.3c
 
 ## How to use the biblatex-cse style
 
