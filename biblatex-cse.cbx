@@ -1,6 +1,10 @@
+% =====================================================================
 %% This is file `biblatex-cse.cbx',
 %%
-%% Copyright (C) 2024 by João Lourenço <joao.lourenco@fct.unl.pt>
+%% A Council of Science Editors (CSE) Name–Year bibliography style
+% =====================================================================
+%%
+%% Copyright (C) 2024–25 by João Lourenço <joao.lourenco@fct.unl.pt>
 %%
 %% This file may be distributed and/or modified under the conditions of
 %% the LaTeX Project Public License, either version 1.3c of this license
@@ -12,12 +16,44 @@
 %% and version 1.3c or later is part of all distributions of LaTeX
 %% version 2006/05/20 or later.
 %%
-\def\fileversion{1.1.0}
-\def\filedate   {2025/01/01}
+\def\fileversion{2.0.0}
+\def\filedate   {2025/11/06}
 \edef\filename  {biblatex-cse}
 
 \ProvidesFile{\filename.cbx}[%
-  \filedate\  v\fileversion (João M. Lourenço) Council of Science Editors bibliography style]
+  \filedate\  v\fileversion (João M. Lourenço) CSE Name–Year bibliography style]
 
-\RequireCitationStyle{authoryear}
+\RequireCitationStyle{authoryear} % start from Author-Year format
+
+% Two key tweaks:
+% 1) Use "and" (not comma) before the last name in in-text citations.
+% 2) Page/section postnotes appear as ", 35–47" (no "p.")
+
+% --- In-text page/section locators: ", 35–47" (no "p." or "pp.")
+% 1) Ensure the field itself is printed raw
+
+% format postnotes
+\DeclareFieldFormat{postnote}{#1}
+\DeclareFieldFormat{multipostnote}{#1}
+
+% 2) Control how the postnote is attached to the citation
+% Postnote formatting: comma + space + bare numbers (no "p./pp.")
+\DeclareDelimFormat{postnote}{\addcomma\space}
+
+% 3) Override the macro so it doesn't re-introduce page prefixes
+\renewbibmacro*{postnote}{%
+  \iffieldundef{postnote}
+    {}
+    {\printtext{\addcomma\space\printfield{postnote}}}}
+
+
+% Final name delimiter in citations:
+\DeclareDelimFormat{finalnamedelim}{\addspace and\space}
+\DeclareDelimFormat{multinamedelim}{\addcomma\space}
+
+% Ensure "et al" string has no final period (kept in .bbx too)
+\DefineBibliographyStrings{english}{
+  andothers = {et\addabbrvspace al}
+}
+
 

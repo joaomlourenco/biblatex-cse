@@ -1,6 +1,10 @@
-%% This is file `biblatex-cse.bbx',
+% =====================================================================
+%% This is file `biblatex-cse.bbx'
 %%
-%% Copyright (C) 2024 by João Lourenço <joao.lourenco@fct.unl.pt>
+%% A Council of Science Editors (CSE) Name–Year bibliography style
+% =====================================================================
+%%
+%% Copyright (C) 2024–25 by João Lourenço <joao.lourenco@fct.unl.pt>
 %%
 %% This file may be distributed and/or modified under the conditions of
 %% the LaTeX Project Public License, either version 1.3c of this license
@@ -12,124 +16,295 @@
 %% and version 1.3c or later is part of all distributions of LaTeX
 %% version 2006/05/20 or later.
 %%
-\def\fileversion{1.1.0}
-\def\filedate   {2025/01/01}
+\def\fileversion{2.0.0}
+\def\filedate   {2025/11/06}
 \edef\filename  {biblatex-cse}
 
-\ProvidesFile{\filename.cbx}[%
-  \filedate\  v\fileversion (João M. Lourenço) Council of Science Editors bibliography style]
+\ProvidesFile{\filename.bbx}[%
+  \filedate\  v\fileversion (João M. Lourenço) CSE Name–Year bibliography style]
 
-\RequireBibliographyStyle{authoryear}
+\RequireBibliographyStyle{standard} % start from a neutral base
 
-% From: https://tex.stackexchange.com/questions/12254/biblatex-how-to-remove-the-parentheses-around-the-year-in-authoryear-style
-% By courtesy of Enrico Gregorio (egreg)
-\def\act@on@bibmacro#1#2{%
-  \expandafter#1\csname abx@macro@\detokenize{#2}\endcsname
-}
-\def\patchbibmacro{\act@on@bibmacro\patchcmd}
-\def\pretobibmacro{\act@on@bibmacro\pretocmd}
-\def\apptobibmacro{\act@on@bibmacro\apptocmd}
-\def\showbibmacro{\act@on@bibmacro\show}
-
+% =========
+% GLOBALS
+% =========
+% In the bibliography:
+% - show all authors up to 5; if >5, show only the first author + "et al"
+% In citations:
+% - show both names when there are 2 authors
+% - for >=3 authors, show first author + "et al"
 \ExecuteBibliographyOptions{
-  maxcitenames=2,
-  minbibnames=10,
-  maxbibnames=10,
-  dashed=false,
-  uniquelist=false,
-  giveninits=true,
-  urldate=iso,
-  date=year,
-  seconds=true,
+  giveninits      = true, % use initials for given names
+  maxbibnames     = 5,
+  minbibnames     = 1,
+  maxcitenames    = 2,
+  mincitenames    = 1,
+  doi             = true,
+  url             = true,
+  date            = year,    % print only the year unless date unknown is needed
+  uniquelist      = false,   % should it be true? help needed!
+  language        = auto
 }
 
-% \usepackage{xpatch}
+% ===========================
+% STRINGS / “et al” spelling
+% ===========================
+% CSE examples show "et al" (no final period).
+\DefineBibliographyStrings{english}{
+  andothers = {et\addabbrvspace al}
+}
 
-% Remove commas between family and given names
-\DeclareNameAlias{sortname}{family-given}
-\renewrobustcmd*{\revsdnamepunct}{}
-\renewrobustcmd*{\bibinitdelim}{}
+% ===========================
+% NAME FORMAT (bibliography)
+% ===========================
+% Surname Initials  (no comma, no periods after initials)
+\DeclareNameFormat{author}{%
+  \usebibmacro{name:family-given}
+    {\namepartfamily}
+    {\namepartgiven}   % 'giveninits=true' turns this into initials
+    {\namepartprefix}
+    {\namepartsuffix}%
+  \usebibmacro{name:andothers}%
+}
 
-% Remove commas between family and given names
-\renewrobustcmd*{\revsdnamepunct}{}
-\renewrobustcmd*{\bibinitdelim}{}
+\DeclareNameFormat{editor}{%
+  \usebibmacro{name:family-given}
+    {\namepartfamily}
+    {\namepartgiven}
+    {\namepartprefix}
+    {\namepartsuffix}%
+  \usebibmacro{name:andothers}%
+}
+% No periods between initials; no separator between initials.
+\renewcommand*{\bibinitdelim}{}%
+\renewcommand*{\bibinitperiod}{}%
 
-% Remove dot after initials
-\renewrobustcmd*{\bibinitperiod}{}
-  
-% Remove quotation marks from title
-\DeclareFieldFormat*{title}{#1}
+% ===========================
+% LIST DELIMITERS
+% ===========================
+% Bibliography wants commas between all authors, no "and" before the last.
+\DeclareDelimFormat{multinamedelim}{\addcomma\space}
+\DeclareDelimFormat{finalnamedelim}{\addcomma\space}
 
-% Remove emphasized from titles
-\DeclareFieldFormat*{journaltitle}{#1\isdot}
-\DeclareFieldFormat{postnote}{#1}
-\DeclareFieldFormat{multipostnote}{#1}
-\renewcommand*{\bibpagespunct}{\addcolon}
-\renewcommand{\postnotedelim}{%
-  \iffieldpages{postnote}
-    {\addcolon\space}
-    {\addspace}}
+% After author block, always a period + space.
+\renewcommand*{\labelnamepunct}{\addperiod\space}
 
-% Remove "and" before last author
-\DefineBibliographyExtras{english}{%
-  \DeclareFieldFormat{pages}{#1}
-  \DeclareDelimFormat{finalnamedelim}{%
-    \ifnumgreater{\value{liststop}}{2}{%
-      \printdelim{multinamedelim}}{\addspace\bibstring{and}\space}}}
+% ===========================
+% FIELD FORMATS
+% ===========================
+% Titles should be in sentence case and plain (no quotes or italics by default).
+% (Ensure your .bib titles are correctly cased for species etc.)
+\DeclareFieldFormat{title}{\MakeSentenceCase{#1}}
 
-% Add dot after list of authors (and before year) and remove parentheses in date
-% \xpatchbibmacro{date+extradate}{%
-\patchbibmacro{date+extradate}{%
-  \printtext[parens]%
-}{%
-  \setunit*{\addperiod\space}%
-  \printtext%
-}{}{}
+% If any citation command prints a title (e.g., \citetitle), keep it unquoted:
+\DeclareFieldFormat{citetitle}{#1}
+\DeclareFieldFormat[article]{citetitle}{#1}
 
-% Remove "in:" prefix in journal title
-\renewbibmacro{in:}{}
+% Journals: CSE expects abbreviated journal titles supplied in data.
+% We print whatever is in 'journaltitle' as plain text, then a period.
+\DeclareFieldFormat*{journaltitle}{#1\addperiod}
 
-% Cite as "family initials"
-\DeclareNameFormat{labelname}{%
-  \ifcase\value{uniquename}%
-    \usebibmacro{name:family}
-      {\namepartfamily}
-      {\namepartgiven}
-      {\namepartprefix}
-      {\namepartsuffix}%
-  \or
-    \ifuseprefix
-      {\usebibmacro{name:family-given}
-        {\namepartfamily}
-        {\namepartgiveni}
-        {\namepartprefix}
-        {\namepartsuffixi}}
-      {\usebibmacro{name:family-given}
-        {\namepartfamily}
-        {\namepartgiveni}
-        {\namepartprefixi}
-        {\namepartsuffixi}}%
-  \or
-    \usebibmacro{name:family-given}
-      {\namepartfamily}
-      {\namepartgiven}
-      {\namepartprefix}
-      {\namepartsuffix}%
-  \fi
-  \usebibmacro{name:andothers}}
+% DOI should be rendered as a DOI-based URL and must not be followed by a period.
+\DeclareFieldFormat*{doi}{\href{https://doi.org/#1}{https://doi.org/#1}}
 
-% Always remove "and" before last author
-\ifdefined\prebibhook%
-  \DeclareDelimFormat{finalnamedelim}{%
-    \printdelim{multinamedelim}%
-  }%
-\else\ifdefined\bibliography%
-  \let\origbibliography=\bibliography%
-  \renewcommand{\bibliography}{%
-    \DeclareDelimFormat{finalnamedelim}{%
-      \printdelim{multinamedelim}%
-    }%
-    \origbibliography%
-  }%
-\fi\fi
+% URL: print raw (no trailing dot)
+\DeclareFieldFormat*{url}{#1}
 
+% Date unknown helper (used by online/web when year is missing)
+\DeclareFieldFormat{dateunknown}{date unknown}
+
+% Edition, page total (bookish stuff)
+\DeclareFieldFormat{edition}{#1\space ed.}
+\DeclareFieldFormat{pagetotal}{#1\space p.}
+
+% --- NEVER quote titles (CSE wants plain, sentence case) ---
+% Articles
+\DeclareFieldFormat[article]{title}{\MakeSentenceCase{#1}}
+\DeclareFieldFormat[article]{subtitle}{\MakeSentenceCase{#1}}
+
+% Chapters / conference papers (incollection/inproceedings)
+\DeclareFieldFormat[incollection]{title}{\MakeSentenceCase{#1}}
+\DeclareFieldFormat[incollection]{subtitle}{\MakeSentenceCase{#1}}
+\DeclareFieldFormat[inproceedings]{title}{\MakeSentenceCase{#1}}
+\DeclareFieldFormat[inproceedings]{subtitle}{\MakeSentenceCase{#1}}
+
+% Books / theses / online, etc. (kept plain too)
+\DeclareFieldFormat[book]{title}{\MakeSentenceCase{#1}}
+\DeclareFieldFormat[thesis]{title}{\MakeSentenceCase{#1}}
+\DeclareFieldFormat[online]{title}{\MakeSentenceCase{#1}}
+\DeclareFieldFormat[misc]{title}{\MakeSentenceCase{#1}}
+
+
+% ===========================
+% MACROS (helpers)
+% ===========================
+% Prints a terminal URL/DOI with no trailing punctuation and proper spacing.
+% If both DOI and URL are present, only prints DOI
+\newbibmacro*{cse:trailurl}{%
+  \iffieldundef{doi}
+    {\iffieldundef{url}{}{\setunit{\addspace}\printfield{url}}}
+    {\setunit{\addspace}\printfield{doi}}%
+}
+
+% Volume(issue):pages or Volume:pages
+\newbibmacro*{cse:vol-issue-pages}{%
+  \iffieldundef{volume}{}{\printfield{volume}}%
+  \iffieldundef{number}{}{\mkbibparens{\printfield{number}}}%
+  \iffieldundef{pages}{}{\addcolon\space\printfield{pages}}%
+}
+
+% Volume with supplement strings, article numbers, etc.
+% We adopt this logic:
+% - If pages empty but 'eid' present -> print eid as the location after colon.
+% - If volume is a range (e.g., 157–158), that's already in 'volume' field.
+\newbibmacro*{cse:location}{%
+  \iffieldundef{pages}
+    {\iffieldundef{eid}{}{\addcolon\space\printfield{eid}}}
+    {\addcolon\space\printfield{pages}}%
+}
+
+% ===========================
+% DRIVERS
+% ===========================
+% ---- ARTICLE ----
+% Authors. Year. Article title. Journal title. Volume(issue):pages. DOI/URL
+\DeclareBibliographyDriver{article}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \printnames{author}\addperiod\space
+  \printfield{year}\addperiod\space
+  \printfield{title}\addperiod\space
+  \printfield{journaltitle}\space
+  % ---- Volume(issue):pages ----
+  \printfield{volume}%
+  \iffieldundef{number}
+    {%
+      \iffieldundef{issue}
+        {}{\mkbibparens{\printfield{issue}}}% use 'issue' if 'number' missing
+    }
+    {\mkbibparens{\printfield{number}}}%
+  \iffieldundef{pages}
+    {\iffieldundef{eid}{}{\addcolon\space\printfield{eid}}}
+    {\addcolon\space\printfield{pages}}%
+  % ---- Trailing DOI/URL ----
+  \setunit{\addperiod\space}%
+  \usebibmacro{cse:trailurl}%
+  \usebibmacro{finentry}%
+}
+
+% ---- BOOK ----
+% Authors/Editors. Year. Title. Edition. Publisher. URL (optional)
+\DeclareBibliographyDriver{book}{%
+  \usebibmacro{bibindex}\usebibmacro{begentry}%
+  \ifnameundef{author}
+    {\printnames{editor}\addcomma\space editor\addperiod\space}
+    {\printnames{author}\addperiod\space}%
+  \printfield{year}\addperiod\space
+  \printfield{title}\addperiod\space
+  \iffieldundef{edition}{}{\printfield{edition}\addperiod\space}
+  \printlist{publisher}\addperiod
+  \setunit{\addspace}\usebibmacro{cse:trailurl}%
+  \usebibmacro{finentry}%
+}
+
+% ---- INCOLLECTION (chapter in edited book) ----
+% Authors. Year. Chapter title. In: Editor, editor. Book title. Publisher. p N–N. URL
+\DeclareBibliographyDriver{incollection}{%
+  \usebibmacro{bibindex}\usebibmacro{begentry}%
+  \printnames{author}\addperiod\space
+  \printfield{year}\addperiod\space
+  \printfield{title}\addperiod\space
+  In:\space
+  \ifnameundef{editor}
+    {}
+    {\printnames{editor}\addcomma\space editor\addperiod\space}%
+  \printfield{booktitle}\addperiod\space
+  \printlist{publisher}%
+  \iffieldundef{pages}{}{.\space p\space\printfield{pages}}%
+  \addperiod\space
+  \usebibmacro{cse:trailurl}%
+  \usebibmacro{finentry}%
+}
+
+% ---- THESIS / DISSERTATION ----
+% Author. Year. Title [dissertation]. Institution. URL
+\DeclareBibliographyDriver{thesis}{%
+  \usebibmacro{bibindex}\usebibmacro{begentry}%
+  \printnames{author}\addperiod\space
+  \printfield{year}\addperiod\space
+  \printfield{title}\addspace
+  \mkbibbrackets{dissertation}\addperiod\space
+  \printlist{institution}\addperiod
+  \setunit{\addspace}\usebibmacro{cse:trailurl}%
+  \usebibmacro{finentry}%
+}
+
+% ---- ONLINE / WEBPAGE ----
+% Author. Date. Title. Publisher; [date updated]. URL
+% If no date -> "date unknown" and, if urldate exists, add [accessed ...]
+\DeclareBibliographyDriver{online}{%
+  \usebibmacro{bibindex}\usebibmacro{begentry}%
+  \ifnameundef{author}
+    {\printfield{title}\addperiod\space}
+    {\printnames{author}\addperiod\space}%
+  \iffieldundef{year}
+    {\printfield{dateunknown}\addperiod\space}
+    {\printfield{year}\addperiod\space}%
+  \ifnameundef{author}
+    {}% title already printed above
+    {\printfield{title}\addperiod\space}%
+  \printlist{publisher}%
+  % updated date: we use 'eventdate' if present
+  \iffieldundef{eventdate}
+    {}
+    {;\space\mkbibbrackets{updated\space \printfield{eventyear}\space \printfield{eventmonth}\space \printfield{eventday}}}%
+  % access date when date unknown (or anytime 'urldate' is present)
+  \iffieldundef{urldate}
+    {}
+    {;\space\mkbibbrackets{accessed\space \printurldate}}%
+  \addperiod\space
+  \usebibmacro{cse:trailurl}%
+  \usebibmacro{finentry}%
+}
+
+% ---- PATENT ----
+% Inventor(s), inventors; Assignee, assignee. YYYY Mon DD. Title. Country patent <number>.
+\DeclareBibliographyDriver{patent}{%
+  \usebibmacro{bibindex}\usebibmacro{begentry}%
+  \printnames{author}\addcomma\space inventors\addsemicolon\space
+  \printlist{holder}\addcomma\space assignee\addperiod\space
+  \printdate\addperiod\space
+  \printfield{title}\addperiod\space
+  \printlist{location}\space patent\space \printfield{number}\addperiod
+  \usebibmacro{finentry}%
+}
+
+% ---- NEWSPAPER ----
+% Author. YYYY Mon DD. Title. Newspaper. [updated YYYY Mon DD]. URL
+\DeclareBibliographyDriver{newspaper}{%
+  \usebibmacro{bibindex}\usebibmacro{begentry}%
+  \printnames{author}\addperiod\space
+  \printdate\addperiod\space
+  \printfield{title}\addperiod\space
+  \printfield{journaltitle}\addperiod\space
+  \iffieldundef{eventdate}
+    {}
+    {\mkbibbrackets{updated\space \printdate}}%
+  \setunit{\addspace}\usebibmacro{cse:trailurl}%
+  \usebibmacro{finentry}%
+}
+
+% ---- MISC / FALLBACK ----
+\DeclareBibliographyDriver{misc}{%
+  \usebibmacro{bibindex}\usebibmacro{begentry}%
+  \printnames{author}%
+  \setunit{\addperiod\space}%
+  \printfield{year}%
+  \setunit{\addperiod\space}%
+  \printfield{title}%
+  \setunit{\addperiod\space}%
+  \printlist{publisher}%
+  \setunit{\addperiod\space}%
+  \usebibmacro{cse:trailurl}%
+  \usebibmacro{finentry}%
+}

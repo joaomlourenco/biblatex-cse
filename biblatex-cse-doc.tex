@@ -1,74 +1,376 @@
-%% This is file `biblatex-cse-doc.tex',
-%%
-%% Copyright (C) 2024 by João Lourenço <joao.lourenco@fct.unl.pt>
-%%
-%% This file may be distributed and/or modified under the conditions of
-%% the LaTeX Project Public License, either version 1.3c of this license
-%% or (at your option) any later version. The latest version of this
-%% license is in:
-%%
-%%    http://www.latex-project.org/lppl.txt
-%%
-%% and version 1.3c or later is part of all distributions of LaTeX
-%% version 2006/05/20 or later.
-%%
-\documentclass[
-  a4paper, % paper size.
-  11pt, % type size.
-]{article}
+% =====================================================================
+% biblatex-cse-doc.tex
+% =====================================================================
+% User Manual for the biblatex-cse package
+%
+% Implements the Council of Science Editors (CSE) Name–Year system
+% =====================================================================
+%
+% Copyright (C) 2024–25 by João Lourenço <joao.lourenco@fct.unl.pt>
+%
+% This file may be distributed and/or modified under the conditions of
+% the LaTeX Project Public License, either version 1.3c of this license
+% or (at your option) any later version. The latest version of this
+% license is in:
+%
+%    http://www.latex-project.org/lppl.txt
+%
+% and version 1.3c or later is part of all distributions of LaTeX
+% version 2006/05/20 or later.
 
-% Enable hyperlinking/hypertext and PDF metadata
+\documentclass[11pt]{article}
+
+% =====================================================================
+% Load  biblatex-cse
 \usepackage[style=biblatex-cse]{biblatex}
+% in the preamble, after \usepackage{biblatex}
+% Keep only master's theses, regardless of encoding
+\defbibfilter{onlymasters}{%
+  type=thesis and keyword=mastersthesis
+}
+\defbibfilter{onlyphd}{%
+  type=thesis and keyword=phdthesis
+}
+
+% =====================================================================
+% Load document packages
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{xcolor}
+\usepackage{csquotes}
+\usepackage{titling}
+\usepackage{enumitem}
+\usepackage{minted}
+
+% =====================================================================
+% Enable hyperlinking/hypertext and PDF metadata
+\usepackage{hyperref}
+\definecolor{cseblue}{RGB}{0,55,102}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=cseblue,
+  urlcolor=cseblue,
+  citecolor=cseblue
+}
+
+
+% =====================================================================
+% Add bibliography database
 \addbibresource{bibliography.bib}
 
 
-\usepackage[colorlinks=true,allcolors=blue]{hyperref}
-
-
-\newcommand{\novathesis}{\texttt{novathesis}}
+% =====================================================================
+% Uder defined commands
 \newcommand{\nauthors}[1]{#1 authors: }
+\AtBeginBibliography{\small\color{cseblue}}
+\setcounter{tocdepth}{1}
 
-\title{The Council of Science Editors (\textsf{\filename}) Bib\LaTeX\ style}
-\author{João M. Lourenço $<$\texttt{joao.lourenco@fct.unl.pt}$>$}
-\date{\filedate\ (v\fileversion)}
 
+% =====================================================================
+% Document header
+\title{The Council of Science Editors Name--Year Bib\LaTeX\ style (\textsf{\filename})}
+\author{João M. Lourenço}
+\date{Version \fileversion\ -- \filedate}
+
+% =====================================================================
 \begin{document}
-  
-  \maketitle
+\maketitle
 
 \begin{abstract}
-This is a BibLaTeX style that implements the bibliography style of the Council of Science Editors (CSE) for BibLaTeX.
+The \texttt{biblatex-cse} package provides a set of Bib\LaTeX{} bibliography and citation styles that implement the \textbf{Council of Science Editors (CSE) Name--Year} reference system. It formats references following the conventions of the \emph{CSE Manual for Authors, Editors, and Publishers} (9th edition). This manual describes installation, usage, and customization of the style.\footnote{This style is only a partial implementation of the CSE specification.  Please report any problems you may find in the project's GitHub page.}
 \end{abstract}
 
+\tableofcontents
 
-\section{How to use the biblatex-cse style}
+% =====================================================================
+\section{Introduction}
 
-\begin{enumerate}
-  \item Download the \texttt{biblatex-cse.bbx} and \texttt{biblatex-cse.cbx} files and put them in your document's main diretory/folder.
-  \item Load \texttt{biblatex} with the option \texttt{style=biblatex-cse}, i.e.,
+The \texttt{biblatex-cse} package is a style extension for Bib\LaTeX{}.  
+It defines the bibliography style (\texttt{biblatex-cse.bbx}) and the citation style (\texttt{biblatex-cse.cbx}), implementing the CSE Name--Year system.
+
+The Name--Year system is used widely across the sciences, requiring in-text citations in the form \texttt{(Author Year)} and a reference list ordered alphabetically by author and chronologically by year.
+
+This style is designed for authors, students, and editors working in the biological, medical, or natural sciences who must conform to CSE standards.
+
+% =====================================================================
+\section{Installation}
+
+\subsection{Package contents}
+The distribution provides the following files:
+\begin{itemize}
+  \item \texttt{biblatex-cse.bbx} --- bibliography style definitions;
+  \item \texttt{biblatex-cse.cbx} --- citation style definitions;
+  \item \texttt{biblatex-cse-doc.tex} --- this documentation file;
+  \item \texttt{bibliography.bib} --- example database.
+\end{itemize}
+
+\subsection{Installation steps}
+As the \texttt{biblatex-cse} package is distributed with \texttt{biblatex}, most probably you may skip this step.  Come back if you get the following error
+\begin{center}
+\texttt{Package biblatex Error: Style 'biblatex-cse' not found.}
+\end{center}
+\noindent and follow the instructions below.
+
+Copy the \texttt{.bbx} and \texttt{.cbx} files to one of:
+\begin{itemize}[nosep]
+  \item the current project directory, or
+  \item a personal or system-wide \texttt{TEXMF} tree under \texttt{tex/latex/biblatex-cse/} and run \texttt{texhash}.
+\end{itemize}
+
+The package requires:
+\begin{itemize}
+  \item \texttt{biblatex} 3.20 or newer;
+  \item \texttt{biber} 2.17 or newer;
+  \item \texttt{csquotes} (optional, recommended).
+\end{itemize}
+
+% =====================================================================
+\section{Loading the style}
+
+In your preamble:
+\begin{minted}{latex}
+\usepackage[backend=biber,style=biblatex-cse]{biblatex}
+\addbibresource{myrefs.bib}
+\end{minted}
+
+% Recommended global options:
+% \begin{minted}{latex}
+% \ExecuteBibliographyOptions{
+%   sorting=nyt,
+%   giveninits=true,
+%   maxcitenames=2,
+%   maxbibnames=5,
+%   urldate=iso
+% }
+% \end{minted}
+
+Run \texttt{pdflatex → biber → pdflatex → pdflatex} to compile.  Or, even better, run \texttt{latexmk -pdf yourdocument.tex}.
+
+% =====================================================================
+\section{Citation style (Name–Year)}
+
+CSE uses the Name--Year system for in-text citations:
+\begin{itemize}
+  \item One author: \texttt{(Fauci 2020)}
+  \item Two authors: \texttt{(Fauci and Lane 2020)}
+  \item Three or more authors: \texttt{(Lee et al 2020)}
+  \item Multiple works: \texttt{(Lee et al 2020a, 2020b)}
+  \item Page or section: \texttt{(Lee et al 2020, 45--47)}
+\end{itemize}
+
+Common commands:
+\begin{minted}{latex}
+\parencite{Fauci2020}
+\textcite{Lee2020a}
+\parencite[45--47]{Lee2020b}
+\end{minted}
+
+This style automatically suppresses the “p.” prefix and formats page ranges and multiple citations according to CSE punctuation.
+
+% =====================================================================
+\section{Bibliography formatting}
+
+The general pattern is:
+
+\begin{quote}
+\textbf{Authors. Year. Title. Journal title. Volume(issue):pages. DOI/URL}
+\end{quote}
+
+Each element is separated by a period, and the page range is introduced by a colon.  
+Journal titles are usually abbreviated according to the \emph{List of Title Word Abbreviations} (ISSN Centre).
+
+\subsection*{Examples}
+
+\paragraph{Journal article}
+\begin{minted}{'biblatex_cse.py:BiblatexCSELexer -x'}
+@Article{Fauci2020,
+  author  = {Anthony S. Fauci and H. Clifford Lane},
+  title   = {Four decades of HIV/AIDS—much accomplished, much to do},
+  journal = {N Engl J Med},
+  volume  = {383},
+  number  = {1},
+  pages   = {1–4},
+  year    = {2020},
+  doi     = {10.1056/NEJMp1916753},
+}
+\end{minted}
+
+Output:
+\begin{quote}
+Fauci AS, Lane HC. 2020. Four decades of HIV/AIDS—much accomplished, much to do. \emph{N Engl J Med.} 383(1):1–4. https://doi.org/10.1056/NEJMp1916753
+\end{quote}
+
+\paragraph{Book}
 \begin{verbatim}
-\usepackage[style=biblatex-cse]{biblatex}  
+@Book{Reiss2023,
+  author    = {Reiss, Michael J. and Ruse, Michael},
+  title     = {The new biology: a battle between mechanism and organicism},
+  publisher = {Harvard University Press},
+  year      = {2023},
+}
 \end{verbatim}
-\end{enumerate}
 
+Output:
+\begin{quote}
+Reiss MJ, Ruse M. 2023. The new biology: a battle between mechanism and organicism. Harvard University Press.
+\end{quote}
 
-\section{How to contribute}
+\paragraph{Thesis}
+\begin{verbatim}
+@MastersThesis{Carvalho2002,
+  author      = {Madeira de Carvalho, Luís Manuel},
+  title       = {Epidemiologia e controlo da estrongilidose...},
+  institution = {Faculdade de Medicina Veterinária},
+  location    = {Lisbon},
+  year        = {2002},
+}
+\end{verbatim}
 
-I did this style file by request of a user of my \href{https://github.com/joaomlourenco/novathesis}{LaTeX template \novathesis}. He was quite thorough, double and triple checking that the output was conforming to the requirements of his University (Faculty of Veterinary from the University of Lisbon). Although this \texttt{\filename} style served the requirements from his University, there may still be some unconformities to the CSE style. If you find any, please open an issue in the \href{https://github.com/joaomlourenco/biblatex-cse}{project's page on GitHub} or, even better, \textbf{submit a pull request}.
+Output:
+\begin{quote}
+Madeira de Carvalho LM. 2002. Epidemiologia e controlo da estrongilidose em diferentes sistemas de produção equina em Portugal. [dissertation]. Faculdade de Medicina Veterinária.
+\end{quote}
 
+\paragraph{Website}
+\begin{verbatim}
+@Online{CDC2022,
+  author   = {{Centers for Disease Control and Prevention}},
+  title    = {Health equity considerations and racial and ethnic minority groups},
+  year     = {2020},
+  eventdate= {2022-01-25},
+  urldate  = {2022-01-03},
+  url      = {https://www.cdc.gov/coronavirus/...},
+}
+\end{verbatim}
 
+Output:
+\begin{quote}
+Centers for Disease Control and Prevention. 2020. Health equity considerations and racial and ethnic minority groups. [updated 2022 Jan 25; accessed 2022 Jan 3]. https://www.cdc.gov/coronavirus/...
+\end{quote}
+
+% =====================================================================
+\section{Supported entry types}
+
+\subsection{@article}
+Authors. Year. Article title. Journal title. Volume(issue):pages. DOI/URL
+
+\subsection{@book}
+Authors or editors. Year. Title. Edition. Publisher. DOI/URL
+
+\subsection{@incollection}
+Authors. Year. Chapter title. In: Editor(s), editor(s). Book title. Publisher. p pages. DOI/URL
+
+\subsection{@thesis / @mastersthesis / @phdthesis}
+Author. Year. Title [dissertation]. Institution. DOI/URL
+
+\subsection{@online / @misc}
+Author. Year. Title. Publisher; [updated date; accessed date]. URL
+
+\subsection{@patent}
+Inventor(s), inventors; Assignee, assignee. Year Mon DD. Title. Country patent number.
+
+% =====================================================================
+\section{Options and customization}
+
+The \texttt{biblatex-cse} style inherits all standard Bib\LaTeX{} options.  
+Frequently used options:
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\textbf{Option} & \textbf{Default} & \textbf{Description} \\
+\hline
+\texttt{giveninits} & true & Use initials for given names. \\
+\texttt{maxcitenames} & 2 & Show up to two names in citations. \\
+\texttt{maxbibnames} & 5 & Show up to five names in the bibliography. \\
+\texttt{urldate} & iso & ISO date format for access dates. \\
+\end{tabular}
+\end{center}
+
+Change these with:
+\begin{minted}{latex}
+\ExecuteBibliographyOptions{maxbibnames=10,urldate=long}
+\end{minted}
+
+You can also redefine bibliography headings, for example to print the list at subsection level:
+\begin{minted}{latex}
+\defbibheading{bibliography}{\subsection*{#1}}
+\end{minted}  
+or use
+\begin{minted}{latex}
+\printbibliography[heading=subbibliography]
+\end{minted}
+
+% =====================================================================
+\section{Differences from standard BibLaTeX styles}
+
+Compared with the built-in \texttt{authoryear} style, \texttt{biblatex-cse}:
+
+\begin{itemize}
+  \item separates reference elements with \textbf{periods}, not commas;
+  \item uses a \textbf{colon before page numbers};
+  \item removes parentheses around the year;
+  \item prints \textbf{author initials without periods};
+  \item abbreviates journal titles (manual input);
+  \item prints DOIs as full URLs (\texttt{https://doi.org/...});
+  \item omits “p.” in in-text page references.
+\end{itemize}
+
+% =====================================================================
+\section{Known limitations}
+
+\begin{itemize}
+  \item The style does not automatically abbreviate journal titles; provide them abbreviated in your \texttt{.bib}.
+  \item Unpublished materials and personal communications should be handled manually.
+  \item Some advanced CSE categories (preprints, forthcoming, supplements) may need minor custom drivers.
+\end{itemize}
+
+% =====================================================================
+\section{Acknowledgments}
+
+The style is based on Bib\LaTeX{} by Philipp Lehman and Audrey Boruvka.  
+Formatting conventions follow the \emph{CSE Manual for Authors, Editors, and Publishers, 9th edition} (Council of Science Editors, 2024).
+Thanks to the Bib\LaTeX{} community for style-design examples.
+
+% =====================================================================
+\section{Change history}
+
+\begin{itemize}
+  \item \textbf{v2.0.0} (2025-11-06) — Rework of the style files to better comply to the CSE Name--Year specification.
+  \item \textbf{v1.1.0} (2025-01-01) — Initial public release.
+\end{itemize}
+
+% =====================================================================
+\appendix
+\section{Example document}
+
+\begin{minted}{latex}
+\documentclass{article}
+\usepackage[backend=biber,style=biblatex-cse]{biblatex}
+\addbibresource{bibliography.bib}
+
+\begin{document}
+\section*{Example}
+Research on long-duration spaceflight has revealed
+important physiological changes \parencite{Lee2020a,Lee2020b}.
+
+\printbibliography[title={References}]
+\end{document}
+\end{minted}
+
+Compiling this file with Biber produces CSE-compliant citations and references.
+
+% =====================================================================
 \section{Examples of citations abd bibliography}
   
 \subsection{Article Citations}
 \indent
-\par\nauthors{1}\cite{Duddington1955}
+\par\nauthors{1}\cite[150]{Duddington1955} % rference to page 150
 \par\nauthors{2}\cite{Asa2011}
 \par\nauthors{3}\cite{Migaki1982}
 \par\nauthors{4}\cite{Lysek1982}
 \par\nauthors{5}\cite{Carvalho2007}
 \par\nauthors{8}\cite{Riadigos2014}
 
-\printbibliography[type=article, title=Article References]
+\printbibliography[heading=subbibliography, type=article, title=Article References]
 
 \subsection{Book Citations}
 \indent
@@ -78,35 +380,35 @@ I did this style file by request of a user of my \href{https://github.com/joaoml
 \par\nauthors{4}\cite{Modry2015}
 \par\nauthors{5}\cite{Modry2017}
 
-\printbibliography[type=book, title=Book References]
+\printbibliography[heading=subbibliography, type=book, title=Book References]
 
 
 \subsection{Manual Citations}
 \indent
 \par\nauthors{1}\cite{Zoos2022}
 
-\printbibliography[type=manual, title=Manual References]
-
-
-\subsection{Master Thesis Citations}
-\indent
-\par\nauthors{1}\cite{Carvalho2002}
-
-\printbibliography[type=masterthesis, title=Masterthesis References]
+\printbibliography[heading=subbibliography, type=manual, title=Manual References]
 
 
 \subsection{Online Citations}
 \indent
 \par\nauthors{1}\cite{ZooBarcelona:Timeline}
 
-\printbibliography[type=manual, title=Online References]
+\printbibliography[heading=subbibliography, type=manual, title=Online References]
+
+
+\subsection{Master Thesis Citations}
+\indent
+\par\nauthors{1}\cite{Carvalho2002}
+
+\printbibliography[heading=subbibliography, filter=onlymasters, title=Masterthesis References]
 
 
 \subsection{PhD Thesis Citations}
 \indent
 \par\nauthors{1}\cite{Balan2017}
 
-\printbibliography[type=phdthesis, title=Phdthesis References]
+\printbibliography[heading=subbibliography, filter=onlyphd, title=Phdthesis References]
 
 
 \subsection{Technical Report Citations}
@@ -116,11 +418,7 @@ I did this style file by request of a user of my \href{https://github.com/joaoml
 \par\nauthors{5}\cite{Abello2017}
 \par\nauthors{5}\cite{Duque2018}
 
-\printbibliography[type=techreport, title=Techreport References]
+\printbibliography[heading=subbibliography, type=report, title=Techreport References]
 
-
-
-% Bibliography goes here
-% ----------------------
 
 \end{document}
