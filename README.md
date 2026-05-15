@@ -173,5 +173,5 @@ If you use **`biblatex-cse`**, please star ⭐ the repo or share improvements.
 
 ---
 
-Copyright © 2024-25 João M. Lourenço.  
+Copyright © 2024–26 João M. Lourenço.  
 Crafted with 💙 for reproducible scientific writing.

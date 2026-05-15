@@ -4,7 +4,7 @@
 %% A Council of Science Editors (CSE) Name–Year bibliography style
 % =====================================================================
 %%
-%% Copyright (C) 2024–25 by João Lourenço <joao.lourenco@fct.unl.pt>
+%% Copyright (C) 2024–26 by João Lourenço <joao.lourenco@fct.unl.pt>
 %%
 %% This file may be distributed and/or modified under the conditions of
 %% the LaTeX Project Public License, either version 1.3c of this license
@@ -16,8 +16,8 @@
 %% and version 1.3c or later is part of all distributions of LaTeX
 %% version 2006/05/20 or later.
 %%
-\def\fileversion{2.0.0}
-\def\filedate   {2025/11/06}
+\def\fileversion{2.0.1}
+\def\filedate   {2026/05/15}
 \edef\filename  {biblatex-cse}
 
 \ProvidesFile{\filename.bbx}[%
@@ -255,11 +255,11 @@
     {\printfield{title}\addperiod\space}%
   \printlist{publisher}%
   % updated date: we use 'eventdate' if present
-  \iffieldundef{eventdate}
+  \iffieldundef{eventyear}
     {}
     {;\space\mkbibbrackets{updated\space \printfield{eventyear}\space \printfield{eventmonth}\space \printfield{eventday}}}%
   % access date when date unknown (or anytime 'urldate' is present)
-  \iffieldundef{urldate}
+  \iffieldundef{urlyear}
     {}
     {;\space\mkbibbrackets{accessed\space \printurldate}}%
   \addperiod\space
@@ -287,9 +287,9 @@
   \printdate\addperiod\space
   \printfield{title}\addperiod\space
   \printfield{journaltitle}\addperiod\space
-  \iffieldundef{eventdate}
+  \iffieldundef{eventyear}
     {}
-    {\mkbibbrackets{updated\space \printdate}}%
+    {\mkbibbrackets{updated\space \printfield{eventyear}\space \printfield{eventmonth}\space \printfield{eventday}}}%
   \setunit{\addspace}\usebibmacro{cse:trailurl}%
   \usebibmacro{finentry}%
 }
