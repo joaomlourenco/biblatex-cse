@@ -135,15 +135,15 @@ In your preamble:
 \end{minted}
 
 % Recommended global options:
-% \begin{minted}{latex}
-% \ExecuteBibliographyOptions{
-%   sorting=nyt,
-%   giveninits=true,
-%   maxcitenames=2,
-%   maxbibnames=5,
-%   urldate=iso
-% }
-% \end{minted}
+\begin{minted}{latex}
+\ExecuteBibliographyOptions{
+  sorting=nyt,        % Name–Year–Title order (required for CSE)
+  giveninits=true,    % use initials for given names
+  maxcitenames=2,     % truncate to et al. after two names in citations
+  maxbibnames=5,      % list up to five authors in the bibliography
+  urldate=iso         % ISO access-date format (e.g., 2022-01-25)
+}
+\end{minted}
 
 Run \texttt{pdflatex → biber → pdflatex → pdflatex} to compile.  Or, even better, run \texttt{latexmk -pdf yourdocument.tex}.
 
@@ -161,9 +161,10 @@ CSE uses the Name--Year system for in-text citations:
 
 Common commands:
 \begin{minted}{latex}
-\parencite{Fauci2020}
-\textcite{Lee2020a}
-\parencite[45--47]{Lee2020b}
+\parencite{Fauci2020}            % → (Fauci 2020)
+\textcite{Lee2020a}              % → Lee et al. (2020)
+\parencite[45--47]{Lee2020b}     % → (Lee et al. 2020, 45--47)
+\parencite{Lee2020a,Fauci2020}   % → (Lee et al. 2020; Fauci 2020)
 \end{minted}
 
 This style automatically suppresses the “p.” prefix and formats page ranges and multiple citations according to CSE punctuation.
@@ -267,14 +268,54 @@ Author. Year. Title [dissertation] \emph{or} [master's thesis]. Institution. DOI
 \subsection{@online}
 Author. Date. Title. Publisher; [updated date]; [accessed date]. URL
 
+If neither \texttt{year} nor \texttt{date} is set, the style prints \texttt{[date unknown]} in place of the date.
+
 \subsection{@misc}
 Author. Year. Title. Publisher. URL
+
+\subsection{@newspaper}
+Author. Date. Title. Newspaper title. [updated date]. URL
 
 \subsection{@patent}
 Inventor(s), inventors; Assignee, assignee. Year Mon DD. Title. Country patent number. DOI/URL
 
 \subsection{@report / @techreport}
 Author(s). Year. Title. Institution. Report No.:~number. DOI/URL
+
+\subsection{@manual}
+There is no dedicated \texttt{@manual} driver; these entries fall through to the \texttt{@misc} driver and are formatted as:\\
+Author. Year. Title. Publisher. URL
+
+% =====================================================================
+\section{Separating thesis entries by degree}
+
+Because Bib\LaTeX{}/Biber maps both \texttt{@mastersthesis} and \texttt{@phdthesis} to the
+internal type \texttt{@thesis}, the style detects the degree automatically from the
+\texttt{type} field and prints either \texttt{[master's thesis]} or \texttt{[dissertation]}.
+
+To \emph{filter} bibliography lists by degree (e.g.\ a separate ``Master's Theses''
+section), add a \texttt{keywords} field to each \texttt{.bib} entry:
+
+\begin{minted}{bib}
+@MastersThesis{Smith2020,
+  ...
+  keywords = {mastersthesis},
+}
+@PhdThesis{Jones2019,
+  ...
+  keywords = {phdthesis},
+}
+\end{minted}
+
+Then define filters in the preamble and use them with \verb|\printbibliography|:
+
+\begin{minted}{latex}
+\defbibfilter{onlymasters}{type=thesis and keyword=mastersthesis}
+\defbibfilter{onlyphd}{type=thesis and keyword=phdthesis}
+
+\printbibliography[filter=onlymasters, title={Master's Theses}]
+\printbibliography[filter=onlyphd,     title={Doctoral Dissertations}]
+\end{minted}
 
 % =====================================================================
 \section{Options and customization}
@@ -342,6 +383,16 @@ Thanks to the Bib\LaTeX{} community for style-design examples.
 \section{Change history}
 
 \begin{itemize}
+  \item \textbf{v2.0.4} (2026-05-16) — Improve manual completeness:
+    \begin{itemize}
+      \item Recommended \texttt{\textbackslash ExecuteBibliographyOptions} block now shown (was commented out).
+      \item \texttt{\textbackslash textcite} and multi-cite \texttt{\textbackslash parencite} examples added to §4.
+      \item \texttt{@online}: documented \texttt{[date unknown]} fallback.
+      \item \texttt{@newspaper}: new subsection added to §5 and live example in §8.
+      \item \texttt{@manual}: noted that it falls through to the \texttt{@misc} driver.
+      \item New §6 documents filtering thesis entries by degree using \texttt{keywords} and \texttt{\textbackslash defbibfilter}.
+      \item §8 preamble note explains that \texttt{\textbackslash nauthors\{\}} is a local helper, not part of the style.
+    \end{itemize}
   \item \textbf{v2.0.3} (2026-05-16) — Fix discrepancies between documentation and implementation:
     \begin{itemize}
       \item \textit{"et al."} citation examples now include the correct trailing period.
@@ -394,7 +445,10 @@ Compiling this file with Biber produces CSE-compliant citations and references.
 
 % =====================================================================
 \section{Examples of citations and bibliography}
-  
+
+\noindent\textbf{Note:} The \texttt{\textbackslash nauthors\{n\}} command used below is a local helper defined in this document's preamble as \verb|\newcommand{\nauthors}[1]{#1 authors: }|.
+It is \emph{not} part of the \texttt{biblatex-cse} style; it is only used here to annotate how many authors each entry has.
+
 \subsection{Article Citations}
 \indent
 \par\nauthors{1}\cite[150]{Duddington1955} % reference to page 150
@@ -429,6 +483,13 @@ Compiling this file with Biber produces CSE-compliant citations and references.
 \par\nauthors{1}\cite{ZooBarcelona:Timeline}
 
 \printbibliography[heading=subbibliography, type=online, title=Online References]
+
+
+\subsection{Newspaper Citations}
+\indent
+\par\nauthors{2}\cite{NYT2023}
+
+\printbibliography[heading=subbibliography, type=newspaper, title=Newspaper References]
 
 
 \subsection{Master Thesis Citations}
