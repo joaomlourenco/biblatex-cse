@@ -154,9 +154,9 @@ CSE uses the Name--Year system for in-text citations:
 \begin{itemize}
   \item One author: \texttt{(Fauci 2020)}
   \item Two authors: \texttt{(Fauci and Lane 2020)}
-  \item Three or more authors: \texttt{(Lee et al 2020)}
-  \item Multiple works: \texttt{(Lee et al 2020a, 2020b)}
-  \item Page or section: \texttt{(Lee et al 2020, 45--47)}
+  \item Three or more authors: \texttt{(Lee et al.\ 2020)}
+  \item Multiple works: \texttt{(Lee et al.\ 2020a, 2020b)}
+  \item Page or section: \texttt{(Lee et al.\ 2020, 45--47)}
 \end{itemize}
 
 Common commands:
@@ -198,7 +198,7 @@ Journal titles are usually abbreviated according to the \emph{List of Title Word
 
 Output:
 \begin{quote}
-Fauci AS, Lane HC. 2020. Four decades of HIV/AIDS—much accomplished, much to do. \emph{N Engl J Med.} 383(1):1–4. https://doi.org/10.1056/NEJMp1916753
+Fauci AS, Lane HC. 2020. Four decades of HIV/AIDS—much accomplished, much to do. N Engl J Med. 383(1):1–4. https://doi.org/10.1056/NEJMp1916753
 \end{quote}
 
 \paragraph{Book}
@@ -229,7 +229,7 @@ Reiss MJ, Ruse M. 2023. The new biology: a battle between mechanism and organici
 
 Output:
 \begin{quote}
-Madeira de Carvalho LM. 2002. Epidemiologia e controlo da estrongilidose em diferentes sistemas de produção equina em Portugal. [dissertation]. Faculdade de Medicina Veterinária.
+Madeira de Carvalho LM. 2002. Epidemiologia e controlo da estrongilidose em diferentes sistemas de produção equina em Portugal. [master's thesis]. Faculdade de Medicina Veterinária.
 \end{quote}
 
 \paragraph{Website}
@@ -259,16 +259,22 @@ Authors. Year. Article title. Journal title. Volume(issue):pages. DOI/URL
 Authors or editors. Year. Title. Edition. Publisher. DOI/URL
 
 \subsection{@incollection}
-Authors. Year. Chapter title. In: Editor(s), editor(s). Book title. Publisher. p pages. DOI/URL
+Authors. Year. Chapter title. In: Editor(s), editor(s). Book title. Edition. Publisher. p pages. DOI/URL
 
 \subsection{@thesis / @mastersthesis / @phdthesis}
-Author. Year. Title [dissertation]. Institution. DOI/URL
+Author. Year. Title [dissertation] \emph{or} [master's thesis]. Institution. DOI/URL
 
-\subsection{@online / @misc}
-Author. Year. Title. Publisher; [updated date; accessed date]. URL
+\subsection{@online}
+Author. Date. Title. Publisher; [updated date]; [accessed date]. URL
+
+\subsection{@misc}
+Author. Year. Title. Publisher. URL
 
 \subsection{@patent}
-Inventor(s), inventors; Assignee, assignee. Year Mon DD. Title. Country patent number.
+Inventor(s), inventors; Assignee, assignee. Year Mon DD. Title. Country patent number. DOI/URL
+
+\subsection{@report / @techreport}
+Author(s). Year. Title. Institution. Report No.:~number. DOI/URL
 
 % =====================================================================
 \section{Options and customization}
@@ -336,6 +342,20 @@ Thanks to the Bib\LaTeX{} community for style-design examples.
 \section{Change history}
 
 \begin{itemize}
+  \item \textbf{v2.0.3} (2026-05-16) — Fix discrepancies between documentation and implementation:
+    \begin{itemize}
+      \item \textit{"et al."} citation examples now include the correct trailing period.
+      \item Journal title in article output example shown in Roman (not italic), matching implementation.
+      \item Thesis example output updated to show \texttt{[master's thesis]} for \texttt{@MastersThesis} entries.
+      \item \texttt{@incollection} format now shows \texttt{Edition} between book title and publisher.
+      \item \texttt{@thesis} section now documents both \texttt{[dissertation]} and \texttt{[master's thesis]} labels.
+      \item \texttt{@online} and \texttt{@misc} documented separately; \texttt{@online} now shows full date format.
+      \item \texttt{@patent} format now shows trailing \texttt{DOI/URL}.
+      \item Added \texttt{@report / @techreport} entry type to the supported types section.
+      \item Options table \texttt{urldate=iso} default is now also set in \texttt{biblatex-cse.bbx}.
+      \item Fixed Online References \texttt{\textbackslash printbibliography} filter: \texttt{type=online} (was \texttt{type=manual}).
+      \item Fixed section title typo: ``citations and bibliography'' (was ``abd'').
+    \end{itemize}
   \item \textbf{v2.0.2} (2026-05-16) — Fix discrepancies vs tf\_cse.pdf:
     \begin{itemize}
       \item \textit{"et al."} now carries a trailing abbreviation period in both citations and bibliography.
@@ -373,11 +393,11 @@ important physiological changes \parencite{Lee2020a,Lee2020b}.
 Compiling this file with Biber produces CSE-compliant citations and references.
 
 % =====================================================================
-\section{Examples of citations abd bibliography}
+\section{Examples of citations and bibliography}
   
 \subsection{Article Citations}
 \indent
-\par\nauthors{1}\cite[150]{Duddington1955} % rference to page 150
+\par\nauthors{1}\cite[150]{Duddington1955} % reference to page 150
 \par\nauthors{2}\cite{Asa2011}
 \par\nauthors{3}\cite{Migaki1982}
 \par\nauthors{4}\cite{Lysek1982}
@@ -408,7 +428,7 @@ Compiling this file with Biber produces CSE-compliant citations and references.
 \indent
 \par\nauthors{1}\cite{ZooBarcelona:Timeline}
 
-\printbibliography[heading=subbibliography, type=manual, title=Online References]
+\printbibliography[heading=subbibliography, type=online, title=Online References]
 
 
 \subsection{Master Thesis Citations}
