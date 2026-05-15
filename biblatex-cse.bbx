@@ -16,12 +16,12 @@
 %% and version 1.3c or later is part of all distributions of LaTeX
 %% version 2006/05/20 or later.
 %%
-\def\fileversion{2.0.1}
-\def\filedate   {2026/05/15}
+\def\bltsfileversion{2.0.2}
+\def\bltsfiledae   {2026/05/16}
 \edef\filename  {biblatex-cse}
 
 \ProvidesFile{\filename.bbx}[%
-  \filedate\  v\fileversion (João M. Lourenço) CSE Name–Year bibliography style]
+  \bltsfiledae\  v\bltsfileversion (João M. Lourenço) CSE Name–Year bibliography style]
 
 \RequireBibliographyStyle{standard} % start from a neutral base
 
@@ -49,9 +49,26 @@
 % ===========================
 % STRINGS / “et al” spelling
 % ===========================
-% CSE examples show "et al" (no final period).
+% CSE uses "et al." with a trailing abbreviation period.
 \DefineBibliographyStrings{english}{
-  andothers = {et\addabbrvspace al}
+  andothers = {et\addabbrvspace al\adddot}
+}
+
+% ===========================
+% FULL-DATE HELPER
+% ===========================
+% tf_cse.pdf requires "yyyy Mon dd" dates for newspapers, webpages,
+% conference presentations, and patents.
+\newcommand*{\csemonabrv}[1]{%
+  \ifcase#1\relax
+  \or Jan\or Feb\or Mar\or Apr\or May\or Jun%
+  \or Jul\or Aug\or Sep\or Oct\or Nov\or Dec%
+  \fi}
+
+\newbibmacro*{cse:fulldate}{%
+  \printfield{year}%
+  \iffieldundef{month}{}{\addspace\csemonabrv{\thefield{month}}}%
+  \iffieldundef{day}{}{\addspace\thefield{day}}%
 }
 
 % ===========================
@@ -109,9 +126,6 @@
 
 % URL: print raw (no trailing dot)
 \DeclareFieldFormat*{url}{#1}
-
-% Date unknown helper (used by online/web when year is missing)
-\DeclareFieldFormat{dateunknown}{date unknown}
 
 % Edition, page total (bookish stuff)
 \DeclareFieldFormat{edition}{#1\space ed.}
@@ -197,7 +211,11 @@
 \DeclareBibliographyDriver{book}{%
   \usebibmacro{bibindex}\usebibmacro{begentry}%
   \ifnameundef{author}
-    {\printnames{editor}\addcomma\space editor\addperiod\space}
+    {\printnames{editor}\addcomma\space
+     \ifboolexpr{
+       test {\ifnumgreater{\value{editor}}{1}} or
+       test {\ifandothers{editor}}
+     }{editors}{editor}\addperiod\space}%
     {\printnames{author}\addperiod\space}%
   \printfield{year}\addperiod\space
   \printfield{title}\addperiod\space
@@ -208,7 +226,7 @@
 }
 
 % ---- INCOLLECTION (chapter in edited book) ----
-% Authors. Year. Chapter title. In: Editor, editor. Book title. Publisher. p N–N. URL
+% Authors. Year. Chapter title. In: Editor(s), editor(s). Book title. Edition. Publisher. p N–N. URL
 \DeclareBibliographyDriver{incollection}{%
   \usebibmacro{bibindex}\usebibmacro{begentry}%
   \printnames{author}\addperiod\space
@@ -217,8 +235,13 @@
   In:\space
   \ifnameundef{editor}
     {}
-    {\printnames{editor}\addcomma\space editor\addperiod\space}%
+    {\printnames{editor}\addcomma\space
+     \ifboolexpr{
+       test {\ifnumgreater{\value{editor}}{1}} or
+       test {\ifandothers{editor}}
+     }{editors}{editor}\addperiod\space}%
   \printfield{booktitle}\addperiod\space
+  \iffieldundef{edition}{}{\printfield{edition}\addperiod\space}%
   \printlist{publisher}%
   \iffieldundef{pages}{}{.\space p\space\printfield{pages}}%
   \addperiod\space
@@ -227,29 +250,36 @@
 }
 
 % ---- THESIS / DISSERTATION ----
-% Author. Year. Title [dissertation]. Institution. URL
+% Author. Year. Title [dissertation|master's thesis]. Institution. URL
 \DeclareBibliographyDriver{thesis}{%
   \usebibmacro{bibindex}\usebibmacro{begentry}%
   \printnames{author}\addperiod\space
   \printfield{year}\addperiod\space
   \printfield{title}\addspace
-  \mkbibbrackets{dissertation}\addperiod\space
+  \ifboolexpr{
+    test {\iffieldequalstr{type}{mastersthesis}} or
+    test {\iffieldequalstr{type}{mathesis}} or
+    test {\ifkeyword{mastersthesis}}
+  }
+    {\mkbibbrackets{master's thesis}}
+    {\mkbibbrackets{dissertation}}%
+  \addperiod\space
   \printlist{institution}\addperiod
   \setunit{\addspace}\usebibmacro{cse:trailurl}%
   \usebibmacro{finentry}%
 }
 
 % ---- ONLINE / WEBPAGE ----
-% Author. Date. Title. Publisher; [date updated]. URL
-% If no date -> "date unknown" and, if urldate exists, add [accessed ...]
+% Author. Date. Title. Publisher; [updated date]; [accessed date]. URL
+% If no date -> "[date unknown]" and, if urldate exists, add [accessed ...]
 \DeclareBibliographyDriver{online}{%
   \usebibmacro{bibindex}\usebibmacro{begentry}%
   \ifnameundef{author}
     {\printfield{title}\addperiod\space}
     {\printnames{author}\addperiod\space}%
   \iffieldundef{year}
-    {\printfield{dateunknown}\addperiod\space}
-    {\printfield{year}\addperiod\space}%
+    {\printtext{\mkbibbrackets{date unknown}}\addperiod\space}
+    {\usebibmacro{cse:fulldate}\addperiod\space}%
   \ifnameundef{author}
     {}% title already printed above
     {\printfield{title}\addperiod\space}%
@@ -268,14 +298,15 @@
 }
 
 % ---- PATENT ----
-% Inventor(s), inventors; Assignee, assignee. YYYY Mon DD. Title. Country patent <number>.
+% Inventor(s), inventors; Assignee, assignee. YYYY Mon DD. Title. Country patent <number>. URL
 \DeclareBibliographyDriver{patent}{%
   \usebibmacro{bibindex}\usebibmacro{begentry}%
   \printnames{author}\addcomma\space inventors\addsemicolon\space
   \printlist{holder}\addcomma\space assignee\addperiod\space
-  \printdate\addperiod\space
+  \usebibmacro{cse:fulldate}\addperiod\space
   \printfield{title}\addperiod\space
   \printlist{location}\space patent\space \printfield{number}\addperiod
+  \setunit{\addspace}\usebibmacro{cse:trailurl}%
   \usebibmacro{finentry}%
 }
 
@@ -284,7 +315,7 @@
 \DeclareBibliographyDriver{newspaper}{%
   \usebibmacro{bibindex}\usebibmacro{begentry}%
   \printnames{author}\addperiod\space
-  \printdate\addperiod\space
+  \usebibmacro{cse:fulldate}\addperiod\space
   \printfield{title}\addperiod\space
   \printfield{journaltitle}\addperiod\space
   \iffieldundef{eventyear}
@@ -304,6 +335,21 @@
   \printfield{title}%
   \setunit{\addperiod\space}%
   \printlist{publisher}%
+  \setunit{\addperiod\space}%
+  \usebibmacro{cse:trailurl}%
+  \usebibmacro{finentry}%
+}
+
+% ---- REPORT / TECHREPORT ----
+% Author. Year. Title. Institution. Report No.: number. URL
+\DeclareBibliographyDriver{report}{%
+  \usebibmacro{bibindex}\usebibmacro{begentry}%
+  \printnames{author}\addperiod\space
+  \printfield{year}\addperiod\space
+  \printfield{title}\addperiod\space
+  \printlist{institution}%
+  \iffieldundef{number}{}{%
+    \addperiod\space Report No\adddot\addcolon\space\printfield{number}}%
   \setunit{\addperiod\space}%
   \usebibmacro{cse:trailurl}%
   \usebibmacro{finentry}%

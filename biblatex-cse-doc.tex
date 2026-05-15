@@ -68,8 +68,10 @@
 % =====================================================================
 % Document header
 \title{The Council of Science Editors Name--Year Bib\LaTeX\ style (\textsf{\filename})}
-\author{João M. Lourenço}
-\date{Version \fileversion\ -- \filedate}
+\author{João M. Lourenço\\\url{https://github.com/joaomlourenco/biblatex-cse}}
+\date{Version \bltsfileversion\ (\bltsfiledae)}
+
+
 
 % =====================================================================
 \begin{document}
@@ -334,6 +336,18 @@ Thanks to the Bib\LaTeX{} community for style-design examples.
 \section{Change history}
 
 \begin{itemize}
+  \item \textbf{v2.0.2} (2026-05-16) — Fix discrepancies vs tf\_cse.pdf:
+    \begin{itemize}
+      \item \textit{"et al."} now carries a trailing abbreviation period in both citations and bibliography.
+      \item Thesis entries now emit \texttt{[master's thesis]} vs \texttt{[dissertation]} based on the \texttt{type} field or \texttt{mastersthesis} keyword.
+      \item \texttt{[date unknown]} now renders correctly for online entries with no year.
+      \item Patent entries now include a trailing URL/DOI.
+      \item Newspaper, online, and patent entries now use full \texttt{yyyy Mon dd} dates where month/day are available.
+      \item \texttt{@incollection} entries now include the \texttt{edition} field after the book title.
+      \item Editor label is now pluralised (\textit{editors}) when there are multiple editors in book and chapter entries.
+      \item New \texttt{@report}/\texttt{@techreport} driver: \emph{Author. Year. Title. Institution. Report No.:~number. URL}
+    \end{itemize}
+  \item  \textbf{v2.0.1} (2026-05-15) — Fix event date formatting to correctly display year, month, and day.
   \item \textbf{v2.0.0} (2025-11-06) — Rework of the style files to better comply to the CSE Name--Year specification.
   \item \textbf{v1.1.0} (2025-01-01) — Initial public release.
 \end{itemize}

@@ -16,12 +16,12 @@
 %% and version 1.3c or later is part of all distributions of LaTeX
 %% version 2006/05/20 or later.
 %%
-\def\fileversion{2.0.1}
-\def\filedate   {2026/05/15}
+\def\bltsfileversion{2.0.2}
+\def\bltsfiledae   {2026/05/16}
 \edef\filename  {biblatex-cse}
 
 \ProvidesFile{\filename.cbx}[%
-  \filedate\  v\fileversion (João M. Lourenço) CSE Name–Year bibliography style]
+  \bltsfiledae\  v\bltsfileversion (João M. Lourenço) CSE Name–Year bibliography style]
 
 \RequireCitationStyle{authoryear} % start from Author-Year format
 
@@ -51,9 +51,9 @@
 \DeclareDelimFormat{finalnamedelim}{\addspace and\space}
 \DeclareDelimFormat{multinamedelim}{\addcomma\space}
 
-% Ensure "et al" string has no final period (kept in .bbx too)
+% Ensure "et al." string matches .bbx (trailing abbreviation period)
 \DefineBibliographyStrings{english}{
-  andothers = {et\addabbrvspace al}
+  andothers = {et\addabbrvspace al\adddot}
 }
 
 
