@@ -20,6 +20,9 @@
 
 \documentclass[11pt]{article}
 
+\usepackage{tabularx}
+\usepackage{booktabs}
+
 % =====================================================================
 % Load  biblatex-cse
 \usepackage[style=biblatex-cse]{biblatex}
@@ -156,14 +159,14 @@ CSE uses the Name--Year system for in-text citations:
   \item Two authors: \texttt{(Fauci and Lane 2020)}
   \item Three or more authors: \texttt{(Lee et al.\ 2020)}
   \item Multiple works: \texttt{(Lee et al.\ 2020a, 2020b)}
-  \item Page or section: \texttt{(Lee et al.\ 2020, 45--47)}
+  \item Page or section: \texttt{(Lee et al.\ 2020, 45–47)}
 \end{itemize}
 
 Common commands:
 \begin{minted}{latex}
 \parencite{Fauci2020}            % → (Fauci 2020)
 \textcite{Lee2020a}              % → Lee et al. (2020)
-\parencite[45--47]{Lee2020b}     % → (Lee et al. 2020, 45--47)
+\parencite[45--47]{Lee2020b}     % → (Lee et al. 2020, 45–47)
 \parencite{Lee2020a,Fauci2020}   % → (Lee et al. 2020; Fauci 2020)
 \end{minted}
 
@@ -282,6 +285,14 @@ Inventor(s), inventors; Assignee, assignee. Year Mon DD. Title. Country patent n
 \subsection{@report / @techreport}
 Author(s). Year. Title. Institution. Report No.:~number. DOI/URL
 
+\subsection{@inproceedings}
+Author(s). Year. Paper title. In: Editor(s), editors. Proceedings title (Conference name; YYYY Mon DD; Venue). Publisher. p~pages. DOI/URL\\[4pt]
+Relevant fields: \texttt{author}, \texttt{year}, \texttt{title}, \texttt{editor}, \texttt{booktitle},
+\texttt{eventtitle} (conference name), \texttt{eventyear}/\texttt{eventmonth}/\texttt{eventday} (conference date),
+\texttt{venue} (conference location), \texttt{publisher}, \texttt{pages}, \texttt{doi}/\texttt{url}.\\[4pt]
+When none of \texttt{eventtitle}, \texttt{eventyear}, or \texttt{venue} are present the
+parenthetical conference block is omitted.
+
 \subsection{@manual}
 There is no dedicated \texttt{@manual} driver; these entries fall through to the \texttt{@misc} driver and are formatted as:\\
 Author. Year. Title. Publisher. URL
@@ -382,46 +393,16 @@ Thanks to the Bib\LaTeX{} community for style-design examples.
 % =====================================================================
 \section{Change history}
 
-\begin{itemize}
-  \item \textbf{v2.0.4} (2026-05-16) — Improve manual completeness:
-    \begin{itemize}
-      \item Recommended \texttt{\textbackslash ExecuteBibliographyOptions} block now shown (was commented out).
-      \item \texttt{\textbackslash textcite} and multi-cite \texttt{\textbackslash parencite} examples added to §4.
-      \item \texttt{@online}: documented \texttt{[date unknown]} fallback.
-      \item \texttt{@newspaper}: new subsection added to §5 and live example in §8.
-      \item \texttt{@manual}: noted that it falls through to the \texttt{@misc} driver.
-      \item New §6 documents filtering thesis entries by degree using \texttt{keywords} and \texttt{\textbackslash defbibfilter}.
-      \item §8 preamble note explains that \texttt{\textbackslash nauthors\{\}} is a local helper, not part of the style.
-    \end{itemize}
-  \item \textbf{v2.0.3} (2026-05-16) — Fix discrepancies between documentation and implementation:
-    \begin{itemize}
-      \item \textit{"et al."} citation examples now include the correct trailing period.
-      \item Journal title in article output example shown in Roman (not italic), matching implementation.
-      \item Thesis example output updated to show \texttt{[master's thesis]} for \texttt{@MastersThesis} entries.
-      \item \texttt{@incollection} format now shows \texttt{Edition} between book title and publisher.
-      \item \texttt{@thesis} section now documents both \texttt{[dissertation]} and \texttt{[master's thesis]} labels.
-      \item \texttt{@online} and \texttt{@misc} documented separately; \texttt{@online} now shows full date format.
-      \item \texttt{@patent} format now shows trailing \texttt{DOI/URL}.
-      \item Added \texttt{@report / @techreport} entry type to the supported types section.
-      \item Options table \texttt{urldate=iso} default is now also set in \texttt{biblatex-cse.bbx}.
-      \item Fixed Online References \texttt{\textbackslash printbibliography} filter: \texttt{type=online} (was \texttt{type=manual}).
-      \item Fixed section title typo: ``citations and bibliography'' (was ``abd'').
-    \end{itemize}
-  \item \textbf{v2.0.2} (2026-05-16) — Fix discrepancies vs tf\_cse.pdf:
-    \begin{itemize}
-      \item \textit{"et al."} now carries a trailing abbreviation period in both citations and bibliography.
-      \item Thesis entries now emit \texttt{[master's thesis]} vs \texttt{[dissertation]} based on the \texttt{type} field or \texttt{mastersthesis} keyword.
-      \item \texttt{[date unknown]} now renders correctly for online entries with no year.
-      \item Patent entries now include a trailing URL/DOI.
-      \item Newspaper, online, and patent entries now use full \texttt{yyyy Mon dd} dates where month/day are available.
-      \item \texttt{@incollection} entries now include the \texttt{edition} field after the book title.
-      \item Editor label is now pluralised (\textit{editors}) when there are multiple editors in book and chapter entries.
-      \item New \texttt{@report}/\texttt{@techreport} driver: \emph{Author. Year. Title. Institution. Report No.:~number. URL}
-    \end{itemize}
-  \item  \textbf{v2.0.1} (2026-05-15) — Fix event date formatting to correctly display year, month, and day.
-  \item \textbf{v2.0.0} (2025-11-06) — Rework of the style files to better comply to the CSE Name--Year specification.
-  \item \textbf{v1.1.0} (2025-01-01) — Initial public release.
-\end{itemize}
+\noindent
+\begin{tabularx}{\textwidth}{>{\bfseries}llX}
+  \toprule
+  v2.0.4 & (2026-05-16) & Improve manual completeness.\\
+         &              & Fix discrepancies from CSE standard.\\
+         &              & Fix event date formatting to correctly display year, month, and day.\\
+  v2.0.0 & (2025-11-06) & Rework of the style files to better comply to the CSE Name--Year specification.\\
+  v1.1.0 & (2025-01-01) & Initial public release.\\
+  \bottomrule
+\end{tabularx}
 
 % =====================================================================
 \appendix

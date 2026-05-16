@@ -147,6 +147,12 @@
 % URL: print raw (no trailing dot)
 \DeclareFieldFormat*{url}{#1}
 
+% Pages: print bare numbers — no "p." / "pp." prefix (CSE uses Volume(issue):pages)
+\DeclareFieldFormat{pages}{#1}
+\DeclareFieldFormat[article]{pages}{#1}
+\DeclareFieldFormat[incollection]{pages}{#1}
+\DeclareFieldFormat[inproceedings]{pages}{#1}
+
 % Edition ordinal: "2nd ed.", "3rd ed.", etc.
 % Returns the full ordinal string for N=0..29; falls back to "Nth" for N>29.
 \newcommand*{\cseordinal}[1]{%
@@ -291,7 +297,6 @@
   \printfield{year}\addperiod\space
   \printfield{title}\addspace
   \ifboolexpr{
-    test {\iffieldequalstr{type}{mastersthesis}} or
     test {\iffieldequalstr{type}{mathesis}} or
     test {\ifkeyword{mastersthesis}}
   }
