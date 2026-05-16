@@ -142,7 +142,7 @@ biblatex-cse/
 
 ---
 
-##‍💻 Development
+##‍ Development
 
 ### Test installation
 
@@ -166,7 +166,7 @@ Licensed under the [LaTeX Project Public License (LPPL) v1.3c](https://www.latex
 
 ---
 
-### ⭐ Contributions
+### Contributions
 
 Pull requests, bug reports, and suggestions are welcome!  
 If you use **`biblatex-cse`**, please star ⭐ the repo or share improvements.
