@@ -16,7 +16,7 @@
 %% and version 1.3c or later is part of all distributions of LaTeX
 %% version 2006/05/20 or later.
 %%
-\def\bltsfileversion{2.0.4}
+\def\bltsfileversion{2.1.0}
 \def\bltsfiledae   {2026/05/16}
 \edef\filename  {biblatex-cse}
 
@@ -28,13 +28,11 @@
 % =========
 % GLOBALS
 % =========
-% In the bibliography:
-% - show all authors up to 5; if >5, show only the first author + "et al"
-% In citations:
-% - show both names when there are 2 authors
-% - for >=3 authors, show first author + "et al"
+% CSE 9th edition rules:
+% - In the bibliography: list up to 5 authors; if >5, show only the first + "et al."
+% - In citations: show both names for 2 authors; ≥3 → first author + "et al."
 \ExecuteBibliographyOptions{
-  giveninits      = true, % use initials for given names
+  giveninits      = true,  % use initials for given names
   maxbibnames     = 5,
   minbibnames     = 1,
   maxcitenames    = 2,
@@ -42,8 +40,7 @@
   doi             = true,
   url             = true,
   date            = year,    % print only the year unless date unknown is needed
-  urldate         = iso,     % ISO format for access dates (e.g., 2022-01-25)
-  uniquelist      = false,   % should it be true? help needed!
+  uniquelist      = minyear, % extend author list to disambiguate et-al citations
   language        = auto
 }
 
@@ -58,7 +55,7 @@
 % ===========================
 % FULL-DATE HELPER
 % ===========================
-% tf_cse.pdf requires "yyyy Mon dd" dates for newspapers, webpages,
+% CSE requires "YYYY Mon DD" dates for newspapers, webpages,
 % conference presentations, and patents.
 \newcommand*{\csemonabrv}[1]{%
   \ifcase#1\relax
@@ -70,6 +67,28 @@
   \printfield{year}%
   \iffieldundef{month}{}{\addspace\csemonabrv{\thefield{month}}}%
   \iffieldundef{day}{}{\addspace\thefield{day}}%
+}
+
+% "updated YYYY Mon DD" block (uses eventdate fields)
+\newbibmacro*{cse:eventdate}{%
+  \iffieldundef{eventyear}{}{%
+    \mkbibbrackets{%
+      updated\addspace\thefield{eventyear}%
+      \iffieldundef{eventmonth}{}{\addspace\csemonabrv{\thefield{eventmonth}}}%
+      \iffieldundef{eventday}{}{\addspace\thefield{eventday}}%
+    }%
+  }%
+}
+
+% "accessed YYYY Mon DD" block (uses urldate fields)
+\newbibmacro*{cse:urldate}{%
+  \iffieldundef{urlyear}{}{%
+    \mkbibbrackets{%
+      accessed\addspace\thefield{urlyear}%
+      \iffieldundef{urlmonth}{}{\addspace\csemonabrv{\thefield{urlmonth}}}%
+      \iffieldundef{urlday}{}{\addspace\thefield{urlday}}%
+    }%
+  }%
 }
 
 % ===========================
@@ -128,9 +147,20 @@
 % URL: print raw (no trailing dot)
 \DeclareFieldFormat*{url}{#1}
 
-% Edition, page total (bookish stuff)
-\DeclareFieldFormat{edition}{#1\space ed.}
-\DeclareFieldFormat{pagetotal}{#1\space p.}
+% Edition ordinal: "2nd ed.", "3rd ed.", etc.
+% Returns the full ordinal string for N=0..29; falls back to "Nth" for N>29.
+\newcommand*{\cseordinal}[1]{%
+  \ifcase#1\relax
+    0th\or 1st\or 2nd\or 3rd\or 4th\or 5th\or 6th\or 7th\or 8th\or 9th\or
+    10th\or 11th\or 12th\or 13th\or 14th\or 15th\or 16th\or 17th\or 18th\or 19th\or
+    20th\or 21st\or 22nd\or 23rd\or 24th\or 25th\or 26th\or 27th\or 28th\or 29th%
+  \else #1th\fi}
+
+\DeclareFieldFormat{edition}{%
+  \ifinteger{#1}
+    {\cseordinal{#1}\addspace ed\adddot}
+    {#1\addspace ed\adddot}}
+\DeclareFieldFormat{pagetotal}{#1\space p\adddot}
 
 % --- NEVER quote titles (CSE wants plain, sentence case) ---
 % Articles
@@ -209,6 +239,7 @@
 
 % ---- BOOK ----
 % Authors/Editors. Year. Title. Edition. Publisher. URL (optional)
+% CSE 9th ed.: publisher location is omitted.
 \DeclareBibliographyDriver{book}{%
   \usebibmacro{bibindex}\usebibmacro{begentry}%
   \ifnameundef{author}
@@ -220,7 +251,7 @@
     {\printnames{author}\addperiod\space}%
   \printfield{year}\addperiod\space
   \printfield{title}\addperiod\space
-  \iffieldundef{edition}{}{\printfield{edition}\addperiod\space}
+  \iffieldundef{edition}{}{\printfield{edition}\addperiod\space}%
   \printlist{publisher}\addperiod
   \setunit{\addspace}\usebibmacro{cse:trailurl}%
   \usebibmacro{finentry}%
@@ -228,6 +259,7 @@
 
 % ---- INCOLLECTION (chapter in edited book) ----
 % Authors. Year. Chapter title. In: Editor(s), editor(s). Book title. Edition. Publisher. p N–N. URL
+% CSE 9th ed.: publisher location is omitted.
 \DeclareBibliographyDriver{incollection}{%
   \usebibmacro{bibindex}\usebibmacro{begentry}%
   \printnames{author}\addperiod\space
@@ -244,7 +276,7 @@
   \printfield{booktitle}\addperiod\space
   \iffieldundef{edition}{}{\printfield{edition}\addperiod\space}%
   \printlist{publisher}%
-  \iffieldundef{pages}{}{.\space p\space\printfield{pages}}%
+  \iffieldundef{pages}{}{.\space p\addspace\printfield{pages}}%
   \addperiod\space
   \usebibmacro{cse:trailurl}%
   \usebibmacro{finentry}%
@@ -252,6 +284,7 @@
 
 % ---- THESIS / DISSERTATION ----
 % Author. Year. Title [dissertation|master's thesis]. Institution. URL
+% CSE 9th ed.: publisher location is omitted.
 \DeclareBibliographyDriver{thesis}{%
   \usebibmacro{bibindex}\usebibmacro{begentry}%
   \printnames{author}\addperiod\space
@@ -271,8 +304,9 @@
 }
 
 % ---- ONLINE / WEBPAGE ----
-% Author. Date. Title. Publisher; [updated date]; [accessed date]. URL
-% If no date -> "[date unknown]" and, if urldate exists, add [accessed ...]
+% Author. Date. Title. Publisher; [updated YYYY Mon DD]; [accessed YYYY Mon DD]. URL
+% CSE 9th ed.: publisher location is omitted; access date only required when
+%   source has no publication date, but is printed whenever supplied.
 \DeclareBibliographyDriver{online}{%
   \usebibmacro{bibindex}\usebibmacro{begentry}%
   \ifnameundef{author}
@@ -285,14 +319,8 @@
     {}% title already printed above
     {\printfield{title}\addperiod\space}%
   \printlist{publisher}%
-  % updated date: we use 'eventdate' if present
-  \iffieldundef{eventyear}
-    {}
-    {;\space\mkbibbrackets{updated\space \printfield{eventyear}\space \printfield{eventmonth}\space \printfield{eventday}}}%
-  % access date when date unknown (or anytime 'urldate' is present)
-  \iffieldundef{urlyear}
-    {}
-    {;\space\mkbibbrackets{accessed\space \printurldate}}%
+  \usebibmacro{cse:eventdate}%  % [updated YYYY Mon DD]
+  \usebibmacro{cse:urldate}%    % [accessed YYYY Mon DD]
   \addperiod\space
   \usebibmacro{cse:trailurl}%
   \usebibmacro{finentry}%
@@ -319,9 +347,7 @@
   \usebibmacro{cse:fulldate}\addperiod\space
   \printfield{title}\addperiod\space
   \printfield{journaltitle}\addperiod\space
-  \iffieldundef{eventyear}
-    {}
-    {\mkbibbrackets{updated\space \printfield{eventyear}\space \printfield{eventmonth}\space \printfield{eventday}}}%
+  \usebibmacro{cse:eventdate}%  % [updated YYYY Mon DD]
   \setunit{\addspace}\usebibmacro{cse:trailurl}%
   \usebibmacro{finentry}%
 }
@@ -343,6 +369,7 @@
 
 % ---- REPORT / TECHREPORT ----
 % Author. Year. Title. Institution. Report No.: number. URL
+% CSE 9th ed.: publisher location is omitted.
 \DeclareBibliographyDriver{report}{%
   \usebibmacro{bibindex}\usebibmacro{begentry}%
   \printnames{author}\addperiod\space
@@ -351,6 +378,48 @@
   \printlist{institution}%
   \iffieldundef{number}{}{%
     \addperiod\space Report No\adddot\addcolon\space\printfield{number}}%
+  \setunit{\addperiod\space}%
+  \usebibmacro{cse:trailurl}%
+  \usebibmacro{finentry}%
+}
+
+% ---- INPROCEEDINGS (conference paper) ----
+% Authors. Year. Paper title. In: Editor(s), editors. Title of proceedings
+%   (Conference name; YYYY Mon DD; Venue). Publisher. p N–N. DOI/URL
+% CSE 9th ed.: publisher location is omitted.
+\DeclareBibliographyDriver{inproceedings}{%
+  \usebibmacro{bibindex}\usebibmacro{begentry}%
+  \printnames{author}\addperiod\space
+  \printfield{year}\addperiod\space
+  \printfield{title}\addperiod\space
+  In:\space
+  \ifnameundef{editor}
+    {}
+    {\printnames{editor}\addcomma\space
+     \ifboolexpr{
+       test {\ifnumgreater{\value{editor}}{1}} or
+       test {\ifandothers{editor}}
+     }{editors}{editor}\addperiod\space}%
+  \printfield{booktitle}%
+  % Conference name/date/venue in parentheses when available
+  \ifboolexpr{
+    not test {\iffieldundef{eventtitle}} or
+    not test {\iffieldundef{eventyear}} or
+    not test {\iffieldundef{venue}}
+  }{%
+    \addspace\mkbibparens{%
+      \iffieldundef{eventtitle}{}{\printfield{eventtitle}}%
+      \iffieldundef{eventyear}{}%
+        {\setunit{\addsemicolon\space}%
+         \thefield{eventyear}%
+         \iffieldundef{eventmonth}{}{\addspace\csemonabrv{\thefield{eventmonth}}}%
+         \iffieldundef{eventday}{}{\addspace\thefield{eventday}}}%
+      \iffieldundef{venue}{}{\setunit{\addsemicolon\space}\printfield{venue}}%
+    }%
+  }{}%
+  \addperiod\space
+  \printlist{publisher}%
+  \iffieldundef{pages}{}{.\space p\addspace\printfield{pages}}%
   \setunit{\addperiod\space}%
   \usebibmacro{cse:trailurl}%
   \usebibmacro{finentry}%
